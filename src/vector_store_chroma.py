@@ -39,7 +39,7 @@ def cargar_textos(ids: list[str]) -> list[str]:
 
 def extraer_metadata(pregunta_id: str) -> dict[str, str]:
     partes = pregunta_id.split("_")
-    return {"jornada": partes[0], "tipo_pregunta": partes[-1]}
+    return {"jornada": partes[0], "partido": partes[1], "tipo_pregunta": partes[-1]}
 
 
 def construir_coleccion(

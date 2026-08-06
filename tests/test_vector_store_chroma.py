@@ -25,8 +25,12 @@ from vector_store_chroma import (  # noqa: E402
 
 
 def test_extraer_metadata_separa_jornada_y_tipo():
-    assert extraer_metadata("J03_P05_MARCADOR") == {"jornada": "J03", "tipo_pregunta": "MARCADOR"}
-    assert extraer_metadata("J06_D01_PENALES") == {"jornada": "J06", "tipo_pregunta": "PENALES"}
+    assert extraer_metadata("J03_P05_MARCADOR") == {
+        "jornada": "J03", "partido": "P05", "tipo_pregunta": "MARCADOR",
+    }
+    assert extraer_metadata("J06_D01_PENALES") == {
+        "jornada": "J06", "partido": "D01", "tipo_pregunta": "PENALES",
+    }
 
 
 @pytest.mark.skipif(not EMBEDDINGS_NPY.exists(), reason="requiere embeddings de Fase 2 generados")
