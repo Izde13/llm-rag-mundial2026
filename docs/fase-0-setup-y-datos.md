@@ -227,7 +227,7 @@ Cada registro del corpus final tiene esta forma:
 {
   "jornada_id": "J01",
   "jornada": "Jornada 1 - Fase de Grupos",
-  "participante": "Izsack Delos Angeles Rodriguez Acosta",
+  "participante": "Jugador Ejemplo",
   "pregunta_id": "J01_P01_RESULTADO",
   "pregunta": "¿Quién gana Partido 1?",
   "respuesta_participante": "México",
