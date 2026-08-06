@@ -723,6 +723,7 @@ dependencies = [
     { name = "openpyxl" },
     { name = "pandas" },
     { name = "sentence-transformers" },
+    { name = "torch" },
 ]
 
 [package.dev-dependencies]
@@ -737,6 +738,7 @@ requires-dist = [
     { name = "openpyxl", specifier = ">=3.1.5" },
     { name = "pandas", specifier = ">=3.0.5" },
     { name = "sentence-transformers", specifier = ">=5.6.1" },
+    { name = "torch", specifier = ">=2.13.0" },
 ]
 
 [package.metadata.requires-dev]
