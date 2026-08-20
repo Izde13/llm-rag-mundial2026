@@ -161,10 +161,31 @@ def generar_con_corte(
     return decodificar_ids(ids, id_a_simbolo)
 
 
-def rag(query: str, k: int = 3, max_nuevos_tokens: int = 20) -> tuple[str, str]:
+def cargar_recursos_rag():
+    """Carga todo lo pesado (modelo de embeddings, coleccion, LLM, vocabulario)
+    una sola vez. Separado de rag() para que un caller como la UI (src/app.py)
+    pueda cachear esto entre preguntas en vez de recargarlo en cada consulta.
+    """
     modelo_embeddings = SentenceTransformer(NOMBRE_MODELO)
     coleccion = abrir_coleccion()
+    modelo_lm, simbolo_a_id = cargar_modelo(MODELO_RAG_PATH)
+    id_a_simbolo = {v: k_ for k_, v in simbolo_a_id.items()}
+    merges = cargar_merges()
+    return modelo_embeddings, coleccion, modelo_lm, simbolo_a_id, id_a_simbolo, merges
 
+
+def rag_con_recursos(
+    query: str,
+    modelo_embeddings,
+    coleccion,
+    modelo_lm,
+    simbolo_a_id,
+    id_a_simbolo,
+    merges,
+    k: int = 3,
+    max_nuevos_tokens: int = 20,
+) -> tuple[str, str, list[tuple[str, str]]]:
+    """Misma logica que rag(), reutilizando recursos ya cargados."""
     vector_query = embeder_query(query, modelo_embeddings)
     where = construir_where(query)
     # Con filtro por partido, el grupo tiene 5 tipos de pregunta
@@ -176,16 +197,18 @@ def rag(query: str, k: int = 3, max_nuevos_tokens: int = 20) -> tuple[str, str]:
     contexto = recuperar_contexto(coleccion, vector_query, k=k, where=where)
     prompt = construir_prompt(query, contexto)
 
-    modelo_lm, simbolo_a_id = cargar_modelo(MODELO_RAG_PATH)
-    id_a_simbolo = {v: k_ for k_, v in simbolo_a_id.items()}
-    merges = cargar_merges()
     max_seq_len = modelo_lm.embedding.position_embedding.num_embeddings
-
     respuesta = generar_con_corte(
         modelo_lm, prompt, merges, simbolo_a_id, id_a_simbolo, max_seq_len,
         max_nuevos_tokens=max_nuevos_tokens,
     )
 
+    return prompt, respuesta, contexto
+
+
+def rag(query: str, k: int = 3, max_nuevos_tokens: int = 20) -> tuple[str, str]:
+    recursos = cargar_recursos_rag()
+    prompt, respuesta, _ = rag_con_recursos(query, *recursos, k=k, max_nuevos_tokens=max_nuevos_tokens)
     return prompt, respuesta
 
 
